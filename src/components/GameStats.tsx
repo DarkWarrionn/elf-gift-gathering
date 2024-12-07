@@ -3,9 +3,10 @@ import React from 'react';
 interface GameStatsProps {
   coins: number;
   tickets: number;
+  referralBonus: number;
 }
 
-export const GameStats: React.FC<GameStatsProps> = ({ coins, tickets }) => {
+export const GameStats: React.FC<GameStatsProps> = ({ coins, tickets, referralBonus }) => {
   return (
     <div className="flex justify-around w-full max-w-md mx-auto p-4 bg-white rounded-lg shadow-md">
       <div className="text-center">
@@ -17,6 +18,11 @@ export const GameStats: React.FC<GameStatsProps> = ({ coins, tickets }) => {
         <span className="text-2xl">🎟️</span>
         <p className="font-bold text-primary">{tickets}</p>
         <p className="text-sm text-gray-600">Tickets</p>
+      </div>
+      <div className="text-center">
+        <span className="text-2xl">👥</span>
+        <p className="font-bold text-primary">{referralBonus}</p>
+        <p className="text-sm text-gray-600">Referral Bonus</p>
       </div>
     </div>
   );

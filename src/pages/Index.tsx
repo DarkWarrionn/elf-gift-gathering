@@ -3,8 +3,11 @@ import { GameGrid } from '@/components/GameGrid';
 import { GameStats } from '@/components/GameStats';
 import { MainMenu } from '@/components/MainMenu';
 import { useToast } from "@/components/ui/use-toast";
+import { Settings } from '@/components/Settings';
+import { Referrals } from '@/components/Referrals';
 
 type CellContent = '🧝' | '🎁' | '🎄' | '⭐' | null;
+type View = 'menu' | 'game' | 'settings' | 'referrals';
 
 const GRID_SIZE = 6;
 const INITIAL_MOVES = 10;
@@ -15,12 +18,17 @@ const REWARDS = {
 };
 
 const Index = () => {
+  const [currentView, setCurrentView] = useState<View>('menu');
   const [isPlaying, setIsPlaying] = useState(false);
   const [grid, setGrid] = useState<CellContent[][]>([]);
   const [elfPosition, setElfPosition] = useState<[number, number]>([0, 0]);
   const [movesLeft, setMovesLeft] = useState(INITIAL_MOVES);
   const [coins, setCoins] = useState(0);
   const [tickets, setTickets] = useState(3);
+  const [referralBonus, setReferralBonus] = useState(0);
+  const [language, setLanguage] = useState<'en' | 'uk' | 'ru'>('en');
+  const [country, setCountry] = useState('');
+  const [walletAddress, setWalletAddress] = useState('');
   const { toast } = useToast();
 
   const initializeGame = useCallback(() => {
@@ -112,19 +120,90 @@ const Index = () => {
     initializeGame();
   }, [tickets, initializeGame, toast]);
 
+  const handleViewChange = (view: View) => {
+    setCurrentView(view);
+    if (view === 'game') {
+      startGame();
+    }
+  };
+
+  const handleLanguageChange = (newLanguage: 'en' | 'uk' | 'ru') => {
+    setLanguage(newLanguage);
+    toast({
+      title: "Language Updated",
+      description: "Your language preference has been saved",
+    });
+  };
+
+  const handleCountryChange = (newCountry: string) => {
+    setCountry(newCountry);
+    toast({
+      title: "Country Updated",
+      description: "Your country has been updated successfully",
+    });
+  };
+
+  const handleWalletConnect = (address: string) => {
+    setWalletAddress(address);
+    toast({
+      title: "Wallet Connected",
+      description: "Your crypto wallet has been connected successfully",
+    });
+  };
+
+  const handleReferralBonus = (amount: number) => {
+    setReferralBonus(prev => prev + amount);
+    setCoins(prev => prev + amount);
+    toast({
+      title: "Referral Bonus!",
+      description: `You earned ${amount} coins from your referral!`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#E6F7FF] to-white p-4">
-      <GameStats coins={coins} tickets={tickets} />
+      <GameStats 
+        coins={coins} 
+        tickets={tickets} 
+        referralBonus={referralBonus}
+      />
       
-      {isPlaying ? (
+      {currentView === 'menu' && (
+        <MainMenu 
+          onStartGame={() => handleViewChange('game')} 
+          onOpenSettings={() => handleViewChange('settings')}
+          onOpenReferrals={() => handleViewChange('referrals')}
+          hasTickets={tickets > 0} 
+        />
+      )}
+
+      {currentView === 'game' && isPlaying && (
         <GameGrid
           grid={grid}
           onMove={handleMove}
           movesLeft={movesLeft}
           isValidMove={isValidMove}
         />
-      ) : (
-        <MainMenu onStartGame={startGame} hasTickets={tickets > 0} />
+      )}
+
+      {currentView === 'settings' && (
+        <Settings
+          language={language}
+          country={country}
+          walletAddress={walletAddress}
+          onLanguageChange={handleLanguageChange}
+          onCountryChange={handleCountryChange}
+          onWalletConnect={handleWalletConnect}
+          onBack={() => handleViewChange('menu')}
+        />
+      )}
+
+      {currentView === 'referrals' && (
+        <Referrals
+          referralBonus={referralBonus}
+          onEarnBonus={handleReferralBonus}
+          onBack={() => handleViewChange('menu')}
+        />
       )}
     </div>
   );

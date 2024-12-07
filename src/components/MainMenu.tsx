@@ -4,10 +4,17 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface MainMenuProps {
   onStartGame: () => void;
+  onOpenSettings: () => void;
+  onOpenReferrals: () => void;
   hasTickets: boolean;
 }
 
-export const MainMenu: React.FC<MainMenuProps> = ({ onStartGame, hasTickets }) => {
+export const MainMenu: React.FC<MainMenuProps> = ({ 
+  onStartGame, 
+  onOpenSettings,
+  onOpenReferrals,
+  hasTickets 
+}) => {
   const { toast } = useToast();
 
   const handleStartGame = () => {
@@ -41,6 +48,20 @@ export const MainMenu: React.FC<MainMenuProps> = ({ onStartGame, hasTickets }) =
         className="border-accent text-accent hover:bg-accent/10"
       >
         🛍️ Shop
+      </Button>
+      <Button
+        onClick={onOpenReferrals}
+        variant="outline"
+        className="border-accent text-accent hover:bg-accent/10"
+      >
+        👥 Referrals
+      </Button>
+      <Button
+        onClick={onOpenSettings}
+        variant="outline"
+        className="border-accent text-accent hover:bg-accent/10"
+      >
+        ⚙️ Settings
       </Button>
     </div>
   );
