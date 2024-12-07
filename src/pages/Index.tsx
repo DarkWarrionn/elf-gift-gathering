@@ -2,20 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { GameGrid } from '@/components/GameGrid';
 import { GameStats } from '@/components/GameStats';
 import { MainMenu } from '@/components/MainMenu';
-import { useToast } from "@/components/ui/use-toast";
 import { Settings } from '@/components/Settings';
 import { Referrals } from '@/components/Referrals';
+import { RewardCollection } from '@/components/RewardCollection';
+import { TaskList } from '@/components/TaskList';
+import { useToast } from "@/components/ui/use-toast";
 
-type CellContent = '🧝' | '🎁' | '🎄' | '⭐' | null;
 type View = 'menu' | 'game' | 'settings' | 'referrals';
-
-const GRID_SIZE = 6;
-const INITIAL_MOVES = 10;
-const REWARDS = {
-  '🎁': 25,
-  '🎄': 50,
-  '⭐': 100,
-};
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
@@ -160,51 +153,94 @@ const Index = () => {
     });
   };
 
+  const handleRewardCollection = (coinsEarned: number, ticketsEarned: number) => {
+    setCoins(prev => prev + coinsEarned);
+    setTickets(prev => prev + ticketsEarned);
+  };
+
+  const handleTaskComplete = (reward: number) => {
+    setCoins(prev => prev + reward);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E6F7FF] to-white p-4">
-      <GameStats 
-        coins={coins} 
-        tickets={tickets} 
-        referralBonus={referralBonus}
-      />
-      
-      {currentView === 'menu' && (
-        <MainMenu 
-          onStartGame={() => handleViewChange('game')} 
-          onOpenSettings={() => handleViewChange('settings')}
-          onOpenReferrals={() => handleViewChange('referrals')}
-          hasTickets={tickets > 0} 
-        />
-      )}
-
-      {currentView === 'game' && isPlaying && (
-        <GameGrid
-          grid={grid}
-          onMove={handleMove}
-          movesLeft={movesLeft}
-          isValidMove={isValidMove}
-        />
-      )}
-
-      {currentView === 'settings' && (
-        <Settings
-          language={language}
-          country={country}
-          walletAddress={walletAddress}
-          onLanguageChange={handleLanguageChange}
-          onCountryChange={handleCountryChange}
-          onWalletConnect={handleWalletConnect}
-          onBack={() => handleViewChange('menu')}
-        />
-      )}
-
-      {currentView === 'referrals' && (
-        <Referrals
+    <div className="min-h-screen bg-gradient-to-b from-[#1A365D] to-[#2C5282] p-4">
+      <div className="max-w-md mx-auto space-y-4">
+        {/* Snowfall effect using pseudo-elements */}
+        <style jsx>{`
+          .snowfall {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+          }
+          .snowfall::before,
+          .snowfall::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            animation: snowfall 10s linear infinite;
+          }
+          @keyframes snowfall {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
+          }
+        `}</style>
+        <div className="snowfall" />
+        
+        <GameStats 
+          coins={coins} 
+          tickets={tickets} 
           referralBonus={referralBonus}
-          onEarnBonus={handleReferralBonus}
-          onBack={() => handleViewChange('menu')}
         />
-      )}
+
+        {currentView === 'menu' && (
+          <>
+            <RewardCollection onCollect={handleRewardCollection} />
+            <TaskList onComplete={handleTaskComplete} />
+            <MainMenu 
+              onStartGame={() => handleViewChange('game')} 
+              onOpenSettings={() => handleViewChange('settings')}
+              onOpenReferrals={() => handleViewChange('referrals')}
+              hasTickets={tickets > 0}
+            />
+          </>
+        )}
+
+        {currentView === 'game' && isPlaying && (
+          <GameGrid
+            grid={grid}
+            onMove={handleMove}
+            movesLeft={movesLeft}
+            isValidMove={isValidMove}
+          />
+        )}
+
+        {currentView === 'settings' && (
+          <Settings
+            language={language}
+            country={country}
+            walletAddress={walletAddress}
+            onLanguageChange={handleLanguageChange}
+            onCountryChange={handleCountryChange}
+            onWalletConnect={handleWalletConnect}
+            onBack={() => handleViewChange('menu')}
+          />
+        )}
+
+        {currentView === 'referrals' && (
+          <Referrals
+            referralBonus={referralBonus}
+            onEarnBonus={handleReferralBonus}
+            onBack={() => handleViewChange('menu')}
+          />
+        )}
+      </div>
     </div>
   );
 };
