@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { GameGrid } from '@/components/GameGrid';
 import { GameStats } from '@/components/GameStats';
 import { MainMenu } from '@/components/MainMenu';
@@ -9,8 +9,11 @@ import { TaskList } from '@/components/TaskList';
 import { useToast } from "@/components/ui/use-toast";
 import { CellContent } from '@/types/game';
 import { GRID_SIZE, INITIAL_MOVES, REWARDS } from '@/constants/game';
+import { Language, getTranslation } from '@/utils/language';
 
 type View = 'menu' | 'game' | 'settings' | 'referrals';
+
+const STORAGE_KEY = 'elfGameState';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
@@ -21,10 +24,45 @@ const Index = () => {
   const [coins, setCoins] = useState(0);
   const [tickets, setTickets] = useState(3);
   const [referralBonus, setReferralBonus] = useState(0);
-  const [language, setLanguage] = useState<'en' | 'uk' | 'ru'>('en');
+  const [language, setLanguage] = useState<Language>('en');
   const [country, setCountry] = useState('');
   const [walletAddress, setWalletAddress] = useState('');
+  const [gameEnded, setGameEnded] = useState(false);
   const { toast } = useToast();
+
+  // Load saved state from localStorage
+  useEffect(() => {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      const {
+        coins: savedCoins,
+        tickets: savedTickets,
+        referralBonus: savedBonus,
+        language: savedLanguage,
+        country: savedCountry,
+        walletAddress: savedWallet
+      } = JSON.parse(savedState);
+
+      setCoins(savedCoins);
+      setTickets(savedTickets);
+      setReferralBonus(savedBonus);
+      setLanguage(savedLanguage);
+      setCountry(savedCountry);
+      setWalletAddress(savedWallet);
+    }
+  }, []);
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      coins,
+      tickets,
+      referralBonus,
+      language,
+      country,
+      walletAddress
+    }));
+  }, [coins, tickets, referralBonus, language, country, walletAddress]);
 
   const initializeGame = useCallback(() => {
     const newGrid: CellContent[][] = Array(GRID_SIZE).fill(null)
@@ -73,40 +111,41 @@ const Index = () => {
     const [oldRow, oldCol] = elfPosition;
     const targetCell = grid[row][col];
 
-    // Collect gift if present
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS];
       setCoins(prev => prev + reward);
       toast({
-        title: "Gift collected! 🎉",
-        description: `You earned ${reward} coins!`,
+        title: getTranslation(language, 'rewardsCollected'),
+        description: `+${reward} ${getTranslation(language, 'coins')}!`,
       });
     }
 
-    // Move elf
     newGrid[oldRow][oldCol] = null;
     newGrid[row][col] = '🧝';
     setGrid(newGrid);
     setElfPosition([row, col]);
     setMovesLeft(prev => prev - 1);
 
-    // Check if game is over
     if (movesLeft <= 1) {
+      setGameEnded(true);
       toast({
-        title: "Game Over!",
-        description: "Thanks for playing!",
+        title: getTranslation(language, 'gameOver'),
+        description: getTranslation(language, 'thanks'),
       });
-      setTimeout(() => {
-        setIsPlaying(false);
-      }, 1500);
     }
-  }, [grid, elfPosition, isValidMove, movesLeft, toast]);
+  }, [grid, elfPosition, isValidMove, movesLeft, toast, language]);
+
+  const handleReturnToMenu = useCallback(() => {
+    setCurrentView('menu');
+    setIsPlaying(false);
+    setGameEnded(false);
+  }, []);
 
   const startGame = useCallback(() => {
     if (tickets <= 0) {
       toast({
-        title: "No tickets available",
-        description: "Please purchase tickets to play",
+        title: getTranslation(language, 'noTickets'),
+        description: getTranslation(language, 'purchaseTickets'),
         variant: "destructive",
       });
       return;
@@ -122,46 +161,12 @@ const Index = () => {
     }
   };
 
-  const handleLanguageChange = (newLanguage: 'en' | 'uk' | 'ru') => {
+  const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
     toast({
       title: "Language Updated",
       description: "Your language preference has been saved",
     });
-  };
-
-  const handleCountryChange = (newCountry: string) => {
-    setCountry(newCountry);
-    toast({
-      title: "Country Updated",
-      description: "Your country has been updated successfully",
-    });
-  };
-
-  const handleWalletConnect = (address: string) => {
-    setWalletAddress(address);
-    toast({
-      title: "Wallet Connected",
-      description: "Your crypto wallet has been connected successfully",
-    });
-  };
-
-  const handleReferralBonus = (amount: number) => {
-    setReferralBonus(prev => prev + amount);
-    setCoins(prev => prev + amount);
-    toast({
-      title: "Referral Bonus!",
-      description: `You earned ${amount} coins from your referral!`,
-    });
-  };
-
-  const handleRewardCollection = (coinsEarned: number, ticketsEarned: number) => {
-    setCoins(prev => prev + coinsEarned);
-    setTickets(prev => prev + ticketsEarned);
-  };
-
-  const handleTaskComplete = (reward: number) => {
-    setCoins(prev => prev + reward);
   };
 
   return (
@@ -211,6 +216,7 @@ const Index = () => {
               onOpenSettings={() => handleViewChange('settings')}
               onOpenReferrals={() => handleViewChange('referrals')}
               hasTickets={tickets > 0}
+              language={language}
             />
           </>
         )}
@@ -221,6 +227,9 @@ const Index = () => {
             onMove={handleMove}
             movesLeft={movesLeft}
             isValidMove={isValidMove}
+            language={language}
+            onReturnToMenu={handleReturnToMenu}
+            gameEnded={gameEnded}
           />
         )}
 

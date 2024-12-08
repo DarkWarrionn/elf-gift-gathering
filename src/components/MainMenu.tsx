@@ -1,27 +1,30 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Language, getTranslation } from '@/utils/language';
 
 interface MainMenuProps {
   onStartGame: () => void;
   onOpenSettings: () => void;
   onOpenReferrals: () => void;
   hasTickets: boolean;
+  language: Language;
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ 
   onStartGame, 
   onOpenSettings,
   onOpenReferrals,
-  hasTickets 
+  hasTickets,
+  language
 }) => {
   const { toast } = useToast();
 
   const handleStartGame = () => {
     if (!hasTickets) {
       toast({
-        title: "No tickets available",
-        description: "Please purchase tickets to play the game",
+        title: getTranslation(language, 'noTickets'),
+        description: getTranslation(language, 'purchaseTickets'),
         variant: "destructive",
       });
       return;
@@ -35,33 +38,33 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         onClick={handleStartGame}
         className="bg-primary hover:bg-primary/90"
       >
-        🎮 Start Game
+        {getTranslation(language, 'startGame')}
       </Button>
       <Button
         variant="secondary"
         className="bg-secondary hover:bg-secondary/90"
       >
-        🏆 Leaderboard
+        {getTranslation(language, 'leaderboard')}
       </Button>
       <Button
         variant="outline"
         className="border-accent text-accent hover:bg-accent/10"
       >
-        🛍️ Shop
+        {getTranslation(language, 'shop')}
       </Button>
       <Button
         onClick={onOpenReferrals}
         variant="outline"
         className="border-accent text-accent hover:bg-accent/10"
       >
-        👥 Referrals
+        {getTranslation(language, 'referrals')}
       </Button>
       <Button
         onClick={onOpenSettings}
         variant="outline"
         className="border-accent text-accent hover:bg-accent/10"
       >
-        ⚙️ Settings
+        {getTranslation(language, 'settings')}
       </Button>
     </div>
   );

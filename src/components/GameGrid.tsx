@@ -1,13 +1,17 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
-
-type CellContent = '🧝' | '🎁' | '🎄' | '⭐' | null;
+import { CellContent } from '@/types/game';
+import { Language, getTranslation } from '@/utils/language';
+import { Button } from "@/components/ui/button";
 
 interface GameGridProps {
   grid: CellContent[][];
   onMove: (row: number, col: number) => void;
   movesLeft: number;
   isValidMove: (row: number, col: number) => boolean;
+  language: Language;
+  onReturnToMenu: () => void;
+  gameEnded: boolean;
 }
 
 export const GameGrid: React.FC<GameGridProps> = ({
@@ -15,11 +19,14 @@ export const GameGrid: React.FC<GameGridProps> = ({
   onMove,
   movesLeft,
   isValidMove,
+  language,
+  onReturnToMenu,
+  gameEnded
 }) => {
   return (
     <div className="w-full max-w-md mx-auto p-4">
       <div className="mb-4 text-center">
-        <span className="text-primary font-bold">Moves left: {movesLeft}</span>
+        <span className="text-primary font-bold">{getTranslation(language, 'movesLeft')}: {movesLeft}</span>
       </div>
       <div className="grid grid-cols-6 gap-1 bg-game-grid p-2 rounded-lg shadow-lg">
         {grid.map((row, rowIndex) =>
@@ -27,11 +34,11 @@ export const GameGrid: React.FC<GameGridProps> = ({
             <button
               key={`${rowIndex}-${colIndex}`}
               onClick={() => onMove(rowIndex, colIndex)}
-              disabled={!isValidMove(rowIndex, colIndex)}
+              disabled={!isValidMove(rowIndex, colIndex) || gameEnded}
               className={cn(
                 "w-12 h-12 flex items-center justify-center bg-game-cell border border-game-border rounded",
                 "transition-all duration-200",
-                isValidMove(rowIndex, colIndex) && "hover:bg-secondary/20",
+                isValidMove(rowIndex, colIndex) && !gameEnded && "hover:bg-secondary/20",
                 cell === '🧝' && "animate-elf-bounce"
               )}
             >
@@ -40,6 +47,16 @@ export const GameGrid: React.FC<GameGridProps> = ({
           ))
         )}
       </div>
+      {gameEnded && (
+        <div className="mt-4 text-center">
+          <Button
+            onClick={onReturnToMenu}
+            className="bg-primary hover:bg-primary/90"
+          >
+            {getTranslation(language, 'returnToMenu')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
