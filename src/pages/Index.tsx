@@ -10,6 +10,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { CellContent } from '@/types/game';
 import { GRID_SIZE, INITIAL_MOVES, REWARDS } from '@/constants/game';
 import { Language, getTranslation } from '@/utils/language';
+import { useGameState } from '@/hooks/useGameState';
+import { useGameHandlers } from '@/hooks/useGameHandlers';
 
 type View = 'menu' | 'game' | 'settings' | 'referrals';
 
@@ -17,129 +19,62 @@ const STORAGE_KEY = 'elfGameState';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [grid, setGrid] = useState<CellContent[][]>([]);
-  const [elfPosition, setElfPosition] = useState<[number, number]>([0, 0]);
-  const [movesLeft, setMovesLeft] = useState(INITIAL_MOVES);
-  const [coins, setCoins] = useState(0);
-  const [tickets, setTickets] = useState(3);
-  const [referralBonus, setReferralBonus] = useState(0);
-  const [language, setLanguage] = useState<Language>('en');
-  const [country, setCountry] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
-  const [gameEnded, setGameEnded] = useState(false);
   const { toast } = useToast();
+  
+  const {
+    isPlaying,
+    grid,
+    elfPosition,
+    movesLeft,
+    coins,
+    tickets,
+    referralBonus,
+    language,
+    country,
+    walletAddress,
+    gameEnded,
+    setIsPlaying,
+    setGrid,
+    setElfPosition,
+    setMovesLeft,
+    setCoins,
+    setTickets,
+    setReferralBonus,
+    setLanguage,
+    setCountry,
+    setWalletAddress,
+    setGameEnded
+  } = useGameState(STORAGE_KEY);
 
-  // Load saved state from localStorage
-  useEffect(() => {
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    if (savedState) {
-      const {
-        coins: savedCoins,
-        tickets: savedTickets,
-        referralBonus: savedBonus,
-        language: savedLanguage,
-        country: savedCountry,
-        walletAddress: savedWallet
-      } = JSON.parse(savedState);
+  const {
+    handleRewardCollection,
+    handleTaskComplete,
+    handleCountryChange,
+    handleWalletConnect,
+    handleReferralBonus,
+    initializeGame,
+    handleMove,
+    isValidMove
+  } = useGameHandlers({
+    isPlaying,
+    grid,
+    elfPosition,
+    movesLeft,
+    setGrid,
+    setElfPosition,
+    setMovesLeft,
+    setCoins,
+    setGameEnded,
+    toast,
+    language
+  });
 
-      setCoins(savedCoins);
-      setTickets(savedTickets);
-      setReferralBonus(savedBonus);
-      setLanguage(savedLanguage);
-      setCountry(savedCountry);
-      setWalletAddress(savedWallet);
+  const handleViewChange = (view: View) => {
+    setCurrentView(view);
+    if (view === 'game') {
+      startGame();
     }
-  }, []);
-
-  // Save state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      coins,
-      tickets,
-      referralBonus,
-      language,
-      country,
-      walletAddress
-    }));
-  }, [coins, tickets, referralBonus, language, country, walletAddress]);
-
-  const initializeGame = useCallback(() => {
-    const newGrid: CellContent[][] = Array(GRID_SIZE).fill(null)
-      .map(() => Array(GRID_SIZE).fill(null));
-    
-    // Place gifts randomly
-    const gifts: CellContent[] = ['🎁', '🎁', '🎁', '🎄', '🎄', '⭐'];
-    for (let gift of gifts) {
-      let placed = false;
-      while (!placed) {
-        const row = Math.floor(Math.random() * GRID_SIZE);
-        const col = Math.floor(Math.random() * GRID_SIZE);
-        if (!newGrid[row][col]) {
-          newGrid[row][col] = gift;
-          placed = true;
-        }
-      }
-    }
-
-    // Place elf randomly
-    let elfRow, elfCol;
-    do {
-      elfRow = Math.floor(Math.random() * GRID_SIZE);
-      elfCol = Math.floor(Math.random() * GRID_SIZE);
-    } while (newGrid[elfRow][elfCol]);
-
-    newGrid[elfRow][elfCol] = '🧝';
-    setElfPosition([elfRow, elfCol]);
-    setGrid(newGrid);
-    setMovesLeft(INITIAL_MOVES);
-    setIsPlaying(true);
-  }, []);
-
-  const isValidMove = useCallback((row: number, col: number) => {
-    if (!isPlaying || movesLeft <= 0) return false;
-    const [elfRow, elfCol] = elfPosition;
-    const rowDiff = Math.abs(row - elfRow);
-    const colDiff = Math.abs(col - elfCol);
-    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
-  }, [elfPosition, isPlaying, movesLeft]);
-
-  const handleMove = useCallback((row: number, col: number) => {
-    if (!isValidMove(row, col)) return;
-
-    const newGrid = [...grid.map(row => [...row])];
-    const [oldRow, oldCol] = elfPosition;
-    const targetCell = grid[row][col];
-
-    if (targetCell && targetCell !== '🧝') {
-      const reward = REWARDS[targetCell as keyof typeof REWARDS];
-      setCoins(prev => prev + reward);
-      toast({
-        title: getTranslation(language, 'rewardsCollected'),
-        description: `+${reward} ${getTranslation(language, 'coins')}!`,
-      });
-    }
-
-    newGrid[oldRow][oldCol] = null;
-    newGrid[row][col] = '🧝';
-    setGrid(newGrid);
-    setElfPosition([row, col]);
-    setMovesLeft(prev => prev - 1);
-
-    if (movesLeft <= 1) {
-      setGameEnded(true);
-      toast({
-        title: getTranslation(language, 'gameOver'),
-        description: getTranslation(language, 'thanks'),
-      });
-    }
-  }, [grid, elfPosition, isValidMove, movesLeft, toast, language]);
-
-  const handleReturnToMenu = useCallback(() => {
-    setCurrentView('menu');
-    setIsPlaying(false);
-    setGameEnded(false);
-  }, []);
+  };
 
   const startGame = useCallback(() => {
     if (tickets <= 0) {
@@ -152,14 +87,7 @@ const Index = () => {
     }
     setTickets(prev => prev - 1);
     initializeGame();
-  }, [tickets, initializeGame, toast]);
-
-  const handleViewChange = (view: View) => {
-    setCurrentView(view);
-    if (view === 'game') {
-      startGame();
-    }
-  };
+  }, [tickets, initializeGame, toast, language]);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
@@ -169,10 +97,16 @@ const Index = () => {
     });
   };
 
+  const handleReturnToMenu = useCallback(() => {
+    setCurrentView('menu');
+    setIsPlaying(false);
+    setGameEnded(false);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1A365D] to-[#2C5282] p-4">
       <div className="max-w-md mx-auto space-y-4">
-        <style>
+        <style jsx>
           {`
             .snowfall {
               position: fixed;
