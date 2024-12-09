@@ -7,6 +7,7 @@ interface MainMenuProps {
   onStartGame: () => void;
   onOpenSettings: () => void;
   onOpenReferrals: () => void;
+  onOpenShop: () => void;
   hasTickets: boolean;
   language: Language;
 }
@@ -15,6 +16,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onStartGame, 
   onOpenSettings,
   onOpenReferrals,
+  onOpenShop,
   hasTickets,
   language
 }) => {
@@ -47,6 +49,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
         {getTranslation(language, 'leaderboard')}
       </Button>
       <Button
+        onClick={onOpenShop}
         variant="outline"
         className="border-accent text-accent hover:bg-accent/10"
       >

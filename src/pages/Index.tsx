@@ -4,6 +4,7 @@ import { GameStats } from '@/components/GameStats';
 import { MainMenu } from '@/components/MainMenu';
 import { Settings } from '@/components/Settings';
 import { Referrals } from '@/components/Referrals';
+import { Shop } from '@/components/Shop';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
 import { useToast } from "@/components/ui/use-toast";
@@ -11,7 +12,7 @@ import { useGameState } from '@/hooks/useGameState';
 import { useGameHandlers } from '@/hooks/useGameHandlers';
 import { Language, getTranslation } from '@/utils/language';
 
-type View = 'menu' | 'game' | 'settings' | 'referrals';
+type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
 
 const STORAGE_KEY = 'elfGameState';
 
@@ -86,7 +87,7 @@ const Index = () => {
     setTickets(prev => prev - 1);
     setIsPlaying(true);
     initializeGame();
-  }, [tickets, initializeGame, toast, language]);
+  }, [tickets, setTickets, setIsPlaying, initializeGame, toast, language]);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
@@ -96,46 +97,26 @@ const Index = () => {
     });
   };
 
+  const handlePurchaseTickets = (amount: number) => {
+    setTickets(prev => prev + amount);
+    console.log('Tickets purchased:', amount);
+  };
+
   const handleContinuePlaying = useCallback(() => {
     setGameEnded(false);
     initializeGame();
     console.log('Continuing game with new round');
-  }, [initializeGame]);
+  }, [initializeGame, setGameEnded]);
 
   const handleReturnToMenu = useCallback(() => {
     setCurrentView('menu');
     setIsPlaying(false);
     setGameEnded(false);
     console.log('Returning to menu');
-  }, []);
+  }, [setCurrentView, setIsPlaying, setGameEnded]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1A365D] to-[#2C5282] p-4">
-      <style>{`
-        .snowfall {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: 1;
-        }
-        .snowfall::before,
-        .snowfall::after {
-          content: '';
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          background: white;
-          border-radius: 50%;
-          animation: snowfall 10s linear infinite;
-        }
-        @keyframes snowfall {
-          0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
-          100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
-        }
-      `}</style>
       <div className="snowfall" />
       
       <div className="max-w-md mx-auto space-y-4">
@@ -153,6 +134,7 @@ const Index = () => {
               onStartGame={() => handleViewChange('game')} 
               onOpenSettings={() => handleViewChange('settings')}
               onOpenReferrals={() => handleViewChange('referrals')}
+              onOpenShop={() => handleViewChange('shop')}
               hasTickets={tickets > 0}
               language={language}
             />
@@ -189,6 +171,15 @@ const Index = () => {
             referralBonus={referralBonus}
             onEarnBonus={handleReferralBonus}
             onBack={() => handleViewChange('menu')}
+          />
+        )}
+
+        {currentView === 'shop' && (
+          <Shop
+            walletAddress={walletAddress}
+            onPurchaseTickets={handlePurchaseTickets}
+            onBack={() => handleViewChange('menu')}
+            language={language}
           />
         )}
       </div>
