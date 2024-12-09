@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { CellContent } from '@/types/game';
 import { GRID_SIZE, INITIAL_MOVES, REWARDS } from '@/constants/game';
 import { Language, getTranslation } from '@/utils/language';
