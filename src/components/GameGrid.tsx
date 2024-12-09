@@ -11,6 +11,7 @@ interface GameGridProps {
   isValidMove: (row: number, col: number) => boolean;
   language: Language;
   onReturnToMenu: () => void;
+  onContinuePlaying: () => void;
   gameEnded: boolean;
 }
 
@@ -21,6 +22,7 @@ export const GameGrid: React.FC<GameGridProps> = ({
   isValidMove,
   language,
   onReturnToMenu,
+  onContinuePlaying,
   gameEnded
 }) => {
   return (
@@ -47,16 +49,21 @@ export const GameGrid: React.FC<GameGridProps> = ({
           ))
         )}
       </div>
-      {gameEnded && (
-        <div className="mt-4 text-center">
-          <Button
-            onClick={onReturnToMenu}
-            className="bg-primary hover:bg-primary/90"
-          >
-            {getTranslation(language, 'returnToMenu')}
-          </Button>
-        </div>
-      )}
+      <div className="mt-4 flex justify-center gap-4">
+        <Button
+          onClick={onReturnToMenu}
+          variant="secondary"
+          className="bg-secondary hover:bg-secondary/90"
+        >
+          {getTranslation(language, 'returnToMenu')}
+        </Button>
+        <Button
+          onClick={onContinuePlaying}
+          className="bg-primary hover:bg-primary/90"
+        >
+          {getTranslation(language, 'continuePlaying')}
+        </Button>
+      </div>
     </div>
   );
 };

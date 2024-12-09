@@ -97,10 +97,17 @@ const Index = () => {
     });
   };
 
+  const handleContinuePlaying = useCallback(() => {
+    setGameEnded(false);
+    initializeGame();
+    console.log('Continuing game with new round');
+  }, [initializeGame]);
+
   const handleReturnToMenu = useCallback(() => {
     setCurrentView('menu');
     setIsPlaying(false);
     setGameEnded(false);
+    console.log('Returning to menu');
   }, []);
 
   return (
@@ -155,7 +162,7 @@ const Index = () => {
           </>
         )}
 
-        {currentView === 'game' && isPlaying && (
+        {currentView === 'game' && (
           <GameGrid
             grid={grid}
             onMove={handleMove}
@@ -163,6 +170,7 @@ const Index = () => {
             isValidMove={isValidMove}
             language={language}
             onReturnToMenu={handleReturnToMenu}
+            onContinuePlaying={handleContinuePlaying}
             gameEnded={gameEnded}
           />
         )}
