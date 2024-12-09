@@ -8,15 +8,13 @@ type TranslationKey =
   | 'settings'
   | 'movesLeft'
   | 'returnToMenu'
+  | 'continuePlaying'
   | 'gameOver'
   | 'thanks'
   | 'noTickets'
   | 'purchaseTickets'
   | 'rewardsCollected'
-  | 'coins'
-  | 'tickets'
-  | 'referralBonus'
-  | 'continuePlaying';
+  | 'coins';
 
 const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
@@ -27,15 +25,13 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     settings: 'Settings',
     movesLeft: 'Moves Left',
     returnToMenu: 'Return to Menu',
+    continuePlaying: 'Continue Playing',
     gameOver: 'Game Over',
     thanks: 'Thanks for playing!',
     noTickets: 'No tickets available',
     purchaseTickets: 'Please purchase tickets to continue playing',
     rewardsCollected: 'Rewards Collected',
-    coins: 'coins',
-    tickets: 'tickets',
-    referralBonus: 'Referral Bonus',
-    continuePlaying: 'Continue Playing'
+    coins: 'coins'
   },
   es: {
     startGame: 'Iniciar Juego',
@@ -45,15 +41,13 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     settings: 'Configuración',
     movesLeft: 'Movimientos Restantes',
     returnToMenu: 'Volver al Menú',
+    continuePlaying: 'Continuar Jugando',
     gameOver: 'Juego Terminado',
     thanks: '¡Gracias por jugar!',
     noTickets: 'No hay tickets disponibles',
     purchaseTickets: 'Por favor compra tickets para continuar jugando',
     rewardsCollected: 'Recompensas Recolectadas',
-    coins: 'monedas',
-    tickets: 'tickets',
-    referralBonus: 'Bono de Referido',
-    continuePlaying: 'Continuar Jugando'
+    coins: 'monedas'
   }
 };
 

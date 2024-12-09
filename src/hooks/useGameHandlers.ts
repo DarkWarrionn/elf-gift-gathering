@@ -31,12 +31,12 @@ export const useGameHandlers = ({
   language
 }: UseGameHandlersProps) => {
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
-    setCoins(prev => prev + coins);
+    setCoins((prev: number) => prev + coins);
     console.log('Rewards collected:', { coins, tickets });
   }, [setCoins]);
 
   const handleTaskComplete = useCallback((reward: number) => {
-    setCoins(prev => prev + reward);
+    setCoins((prev: number) => prev + reward);
     console.log('Task completed with reward:', reward);
   }, [setCoins]);
 
@@ -101,8 +101,8 @@ export const useGameHandlers = ({
     const targetCell = grid[row][col];
 
     if (targetCell && targetCell !== '🧝') {
-      const reward = REWARDS[targetCell as keyof typeof REWARDS];
-      setCoins(prev => prev + reward);
+      const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
+      setCoins((prev: number) => prev + reward);
       toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,

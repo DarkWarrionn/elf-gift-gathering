@@ -9,6 +9,7 @@ import { TaskList } from '@/components/TaskList';
 import { useToast } from "@/components/ui/use-toast";
 import { useGameState } from '@/hooks/useGameState';
 import { useGameHandlers } from '@/hooks/useGameHandlers';
+import { Language, getTranslation } from '@/utils/language';
 
 type View = 'menu' | 'game' | 'settings' | 'referrals';
 
