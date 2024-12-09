@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { GameGrid } from '@/components/GameGrid';
 import { GameStats } from '@/components/GameStats';
 import { MainMenu } from '@/components/MainMenu';
@@ -7,9 +7,6 @@ import { Referrals } from '@/components/Referrals';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
 import { useToast } from "@/components/ui/use-toast";
-import { CellContent } from '@/types/game';
-import { GRID_SIZE, INITIAL_MOVES, REWARDS } from '@/constants/game';
-import { Language, getTranslation } from '@/utils/language';
 import { useGameState } from '@/hooks/useGameState';
 import { useGameHandlers } from '@/hooks/useGameHandlers';
 
@@ -86,6 +83,7 @@ const Index = () => {
       return;
     }
     setTickets(prev => prev - 1);
+    setIsPlaying(true);
     initializeGame();
   }, [tickets, initializeGame, toast, language]);
 
@@ -112,36 +110,34 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1A365D] to-[#2C5282] p-4">
+      <style>{`
+        .snowfall {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .snowfall::before,
+        .snowfall::after {
+          content: '';
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background: white;
+          border-radius: 50%;
+          animation: snowfall 10s linear infinite;
+        }
+        @keyframes snowfall {
+          0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
+          100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
+        }
+      `}</style>
+      <div className="snowfall" />
+      
       <div className="max-w-md mx-auto space-y-4">
-        <style jsx>
-          {`
-            .snowfall {
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              pointer-events: none;
-              z-index: 1;
-            }
-            .snowfall::before,
-            .snowfall::after {
-              content: '';
-              position: absolute;
-              width: 10px;
-              height: 10px;
-              background: white;
-              border-radius: 50%;
-              animation: snowfall 10s linear infinite;
-            }
-            @keyframes snowfall {
-              0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
-              100% { transform: translateY(100vh) translateX(20px); opacity: 0; }
-            }
-          `}
-        </style>
-        <div className="snowfall" />
-        
         <GameStats 
           coins={coins} 
           tickets={tickets} 

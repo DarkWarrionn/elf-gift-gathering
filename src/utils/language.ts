@@ -1,59 +1,62 @@
-export type Language = 'en' | 'uk' | 'ru';
+export type Language = 'en' | 'es';
 
-export const translations = {
+type TranslationKey = 
+  | 'startGame'
+  | 'leaderboard'
+  | 'shop'
+  | 'referrals'
+  | 'settings'
+  | 'movesLeft'
+  | 'returnToMenu'
+  | 'gameOver'
+  | 'thanks'
+  | 'noTickets'
+  | 'purchaseTickets'
+  | 'rewardsCollected'
+  | 'coins'
+  | 'tickets'
+  | 'referralBonus'
+  | 'continuePlaying';
+
+const translations: Record<Language, Record<TranslationKey, string>> = {
   en: {
-    startGame: '🎮 Start Game',
-    leaderboard: '🏆 Leaderboard',
-    shop: '🛍️ Shop',
-    referrals: '👥 Referrals',
-    settings: '⚙️ Settings',
-    movesLeft: 'Moves left',
+    startGame: 'Start Game',
+    leaderboard: 'Leaderboard',
+    shop: 'Shop',
+    referrals: 'Referrals',
+    settings: 'Settings',
+    movesLeft: 'Moves Left',
     returnToMenu: 'Return to Menu',
-    gameOver: 'Game Over!',
+    gameOver: 'Game Over',
     thanks: 'Thanks for playing!',
     noTickets: 'No tickets available',
-    purchaseTickets: 'Please purchase tickets to play',
-    rewardsCollected: 'Rewards Collected! 🎉',
-    coins: 'Coins',
-    tickets: 'Tickets',
-    referralBonus: 'Referral Bonus'
+    purchaseTickets: 'Please purchase tickets to continue playing',
+    rewardsCollected: 'Rewards Collected',
+    coins: 'coins',
+    tickets: 'tickets',
+    referralBonus: 'Referral Bonus',
+    continuePlaying: 'Continue Playing'
   },
-  uk: {
-    startGame: '🎮 Почати гру',
-    leaderboard: '🏆 Таблиця лідерів',
-    shop: '🛍️ Магазин',
-    referrals: '👥 Реферали',
-    settings: '⚙️ Налаштування',
-    movesLeft: 'Залишилось ходів',
-    returnToMenu: 'Повернутися до меню',
-    gameOver: 'Гра закінчена!',
-    thanks: 'Дякуємо за гру!',
-    noTickets: 'Немає квитків',
-    purchaseTickets: 'Будь ласка, придбайте квитки для гри',
-    rewardsCollected: 'Нагороди зібрані! 🎉',
-    coins: 'Монети',
-    tickets: 'Квитки',
-    referralBonus: 'Реферальний бонус'
-  },
-  ru: {
-    startGame: '🎮 Начать игру',
-    leaderboard: '🏆 Таблица лидеров',
-    shop: '🛍️ Магазин',
-    referrals: '👥 Рефералы',
-    settings: '⚙️ Настройки',
-    movesLeft: 'Осталось ходов',
-    returnToMenu: 'Вернуться в меню',
-    gameOver: 'Игра окончена!',
-    thanks: 'Спасибо за игру!',
-    noTickets: 'Нет билетов',
-    purchaseTickets: 'Пожалуйста, купите билеты для игры',
-    rewardsCollected: 'Награды собраны! 🎉',
-    coins: 'Монеты',
-    tickets: 'Билеты',
-    referralBonus: 'Реферальный бонус'
+  es: {
+    startGame: 'Iniciar Juego',
+    leaderboard: 'Tabla de Posiciones',
+    shop: 'Tienda',
+    referrals: 'Referencias',
+    settings: 'Configuración',
+    movesLeft: 'Movimientos Restantes',
+    returnToMenu: 'Volver al Menú',
+    gameOver: 'Juego Terminado',
+    thanks: '¡Gracias por jugar!',
+    noTickets: 'No hay tickets disponibles',
+    purchaseTickets: 'Por favor compra tickets para continuar jugando',
+    rewardsCollected: 'Recompensas Recolectadas',
+    coins: 'monedas',
+    tickets: 'tickets',
+    referralBonus: 'Bono de Referido',
+    continuePlaying: 'Continuar Jugando'
   }
 };
 
-export const getTranslation = (language: Language, key: keyof typeof translations.en) => {
+export const getTranslation = (language: Language, key: TranslationKey): string => {
   return translations[language][key];
 };

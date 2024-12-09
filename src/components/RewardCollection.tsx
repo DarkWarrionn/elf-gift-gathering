@@ -8,8 +8,20 @@ interface RewardCollectionProps {
 }
 
 export const RewardCollection: React.FC<RewardCollectionProps> = ({ onCollect }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(3600); // 1 hour in seconds
-  const [canCollect, setCanCollect] = useState<boolean>(true);
+  const [timeLeft, setTimeLeft] = useState<number>(() => {
+    const savedTime = localStorage.getItem('lastRewardClaim');
+    if (!savedTime) return 0;
+    
+    const timePassed = Math.floor((Date.now() - parseInt(savedTime)) / 1000);
+    return Math.max(3600 - timePassed, 0);
+  });
+  
+  const [canCollect, setCanCollect] = useState<boolean>(() => {
+    const savedTime = localStorage.getItem('lastRewardClaim');
+    if (!savedTime) return true;
+    return Date.now() - parseInt(savedTime) >= 3600000;
+  });
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -17,7 +29,7 @@ export const RewardCollection: React.FC<RewardCollectionProps> = ({ onCollect })
       setTimeLeft((prev) => {
         if (prev <= 0) {
           setCanCollect(true);
-          return 3600;
+          return 0;
         }
         return prev - 1;
       });
@@ -31,6 +43,7 @@ export const RewardCollection: React.FC<RewardCollectionProps> = ({ onCollect })
       onCollect(50, 1); // 50 coins and 1 ticket per hour
       setCanCollect(false);
       setTimeLeft(3600);
+      localStorage.setItem('lastRewardClaim', Date.now().toString());
       toast({
         title: "Rewards Collected! 🎉",
         description: "You received 50 coins and 1 ticket!",
