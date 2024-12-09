@@ -11,7 +11,7 @@ interface UseGameHandlersProps {
   setGrid: (grid: CellContent[][]) => void;
   setElfPosition: (position: [number, number]) => void;
   setMovesLeft: (moves: number) => void;
-  setCoins: (coins: number | ((prev: number) => number)) => void;
+  setCoins: React.Dispatch<React.SetStateAction<number>>;
   setGameEnded: (ended: boolean) => void;
   toast: any;
   language: Language;
@@ -31,12 +31,12 @@ export const useGameHandlers = ({
   language
 }: UseGameHandlersProps) => {
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
-    setCoins(coins);
+    setCoins(prevCoins => prevCoins + coins);
     console.log('Rewards collected:', { coins, tickets });
   }, [setCoins]);
 
   const handleTaskComplete = useCallback((reward: number) => {
-    setCoins((prev: number) => prev + reward);
+    setCoins(prevCoins => prevCoins + reward);
     console.log('Task completed with reward:', reward);
   }, [setCoins]);
 
@@ -49,7 +49,7 @@ export const useGameHandlers = ({
   }, []);
 
   const handleReferralBonus = useCallback((amount: number) => {
-    setCoins(prev => prev + amount);
+    setCoins(prevCoins => prevCoins + amount);
     console.log('Referral bonus earned:', amount);
   }, [setCoins]);
 
@@ -102,7 +102,7 @@ export const useGameHandlers = ({
 
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
-      setCoins((prev: number) => prev + reward);
+      setCoins(prevCoins => prevCoins + reward);
       toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,
