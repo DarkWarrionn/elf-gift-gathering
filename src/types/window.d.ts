@@ -1,6 +1,6 @@
 interface Window {
-  ethereum?: {
-    request: (args: { method: string; params?: any[] }) => Promise<any>;
+  ton?: {
+    send: (method: string, params?: any[]) => Promise<any>;
     selectedAddress?: string;
   };
 }

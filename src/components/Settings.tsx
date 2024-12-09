@@ -28,21 +28,23 @@ export const Settings: React.FC<SettingsProps> = ({
 
   const handleConnectWallet = async () => {
     try {
-      // Check if MetaMask is installed
-      if (typeof window.ethereum !== 'undefined') {
-        // Request account access
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        onWalletConnect(accounts[0]);
+      // Check if TON wallet (Tonkeeper) is installed
+      if (typeof window.ton !== 'undefined') {
+        // Request wallet connection
+        const { address } = await window.ton.send('ton_requestAccounts');
+        onWalletConnect(address);
         toast({
           title: "Wallet Connected",
-          description: "Your crypto wallet has been successfully connected!",
+          description: "Your TON wallet has been successfully connected!",
         });
       } else {
         toast({
-          title: "MetaMask Required",
-          description: "Please install MetaMask to connect your wallet",
+          title: "Tonkeeper Required",
+          description: "Please install Tonkeeper wallet to connect",
           variant: "destructive",
         });
+        // Open Tonkeeper website in a new tab
+        window.open('https://tonkeeper.com', '_blank');
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
@@ -80,13 +82,13 @@ export const Settings: React.FC<SettingsProps> = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Wallet Address</label>
+        <label className="text-sm font-medium">TON Wallet Address</label>
         <div className="flex gap-2">
           <Input
             type="text"
             value={walletAddress}
             readOnly
-            placeholder="Connect your wallet"
+            placeholder="Connect your TON wallet"
             className="flex-1"
           />
           <Button 

@@ -31,16 +31,15 @@ export const Shop: React.FC<ShopProps> = ({
 
     setIsProcessing(true);
     try {
-      // Request transaction approval
-      const priceInWei = price * 1e18; // Convert ETH to Wei
-      await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: walletAddress,
-          to: '0xYourGameWalletAddress', // Replace with your game's wallet address
-          value: priceInWei.toString(16), // Convert to hex
-        }],
-      });
+      // Create TON transaction
+      const transaction = {
+        to: 'EQYour_Game_TON_Address_Here',
+        value: price * 1000000000, // Convert TON to nanotons
+        payload: 'Purchase game tickets'
+      };
+
+      // Send transaction using TON wallet
+      await window.ton.send('ton_sendTransaction', [transaction]);
 
       onPurchaseTickets(amount);
       toast({
@@ -68,9 +67,9 @@ export const Shop: React.FC<ShopProps> = ({
       <div className="grid grid-cols-1 gap-4">
         <div className="p-4 border rounded-lg bg-card">
           <h3 className="text-lg font-semibold mb-2">1 {getTranslation(language, 'ticket')}</h3>
-          <p className="text-sm text-muted-foreground mb-4">0.01 ETH</p>
+          <p className="text-sm text-muted-foreground mb-4">0.5 TON</p>
           <Button 
-            onClick={() => handlePurchase(1, 0.01)}
+            onClick={() => handlePurchase(1, 0.5)}
             disabled={isProcessing || !walletAddress}
             className="w-full"
           >
@@ -80,9 +79,9 @@ export const Shop: React.FC<ShopProps> = ({
 
         <div className="p-4 border rounded-lg bg-card">
           <h3 className="text-lg font-semibold mb-2">5 {getTranslation(language, 'tickets')}</h3>
-          <p className="text-sm text-muted-foreground mb-4">0.045 ETH</p>
+          <p className="text-sm text-muted-foreground mb-4">2 TON</p>
           <Button 
-            onClick={() => handlePurchase(5, 0.045)}
+            onClick={() => handlePurchase(5, 2)}
             disabled={isProcessing || !walletAddress}
             className="w-full"
           >
@@ -92,9 +91,9 @@ export const Shop: React.FC<ShopProps> = ({
 
         <div className="p-4 border rounded-lg bg-card">
           <h3 className="text-lg font-semibold mb-2">10 {getTranslation(language, 'tickets')}</h3>
-          <p className="text-sm text-muted-foreground mb-4">0.08 ETH</p>
+          <p className="text-sm text-muted-foreground mb-4">3.5 TON</p>
           <Button 
-            onClick={() => handlePurchase(10, 0.08)}
+            onClick={() => handlePurchase(10, 3.5)}
             disabled={isProcessing || !walletAddress}
             className="w-full"
           >
