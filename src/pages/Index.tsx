@@ -20,7 +20,7 @@ const STORAGE_KEY = 'elfGameState';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
-  const { toast } = useToast();
+  const toast = useToast();
   
   const {
     isPlaying,

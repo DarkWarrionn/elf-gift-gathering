@@ -104,7 +104,7 @@ export const useGameHandlers = ({
 
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
-      setCoins(prevCoins => prevCoins + reward);
+      setCoins(coins => coins + reward);
       toast.toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,
