@@ -7,7 +7,7 @@ import { Referrals } from '@/components/Referrals';
 import { Shop } from '@/components/Shop';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useGameState } from '@/hooks/useGameState';
 import { useGameHandlers } from '@/hooks/useGameHandlers';
 import { Language, getTranslation } from '@/utils/language';
