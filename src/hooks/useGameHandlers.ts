@@ -32,7 +32,7 @@ export const useGameHandlers = ({
   language
 }: UseGameHandlersProps) => {
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
-    setCoins(prevCoins => prevCoins + coins);
+    setCoins((prevCoins: number) => prevCoins + coins);
     console.log('Rewards collected:', { coins, tickets });
   }, [setCoins]);
 
