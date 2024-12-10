@@ -34,7 +34,7 @@ export const Shop: React.FC<ShopProps> = ({
     try {
       const transaction = {
         to: 'EQYour_Game_TON_Address_Here',
-        value: price * 1000000000,
+        value: price * 1000000000, // Convert to nanoTONs
         payload: 'Purchase game tickets'
       };
 
@@ -58,32 +58,32 @@ export const Shop: React.FC<ShopProps> = ({
   };
 
   const shopItems = [
-    { amount: 1, price: 0.02, icon: Gift },
-    { amount: 5, price: 0.08, icon: Gift },
-    { amount: 10, price: 0.14, icon: Gift },
-    { amount: 100, price: 1.2, icon: Sparkles },
+    { amount: 1, price: 0.0008, icon: Gift },
+    { amount: 5, price: 0.0032, icon: Gift },
+    { amount: 10, price: 0.0056, icon: Gift },
+    { amount: 100, price: 0.048, icon: Sparkles },
   ];
 
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-6 text-red-600">
+      <h2 className="text-2xl font-bold text-center mb-6 text-christmas-red">
         {getTranslation(language, 'ticketShop')} 🎄
       </h2>
 
       <div className="grid grid-cols-1 gap-4">
         {shopItems.map((item, index) => (
-          <div key={index} className="p-4 border rounded-lg bg-gradient-to-r from-green-50 to-red-50 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div key={index} className="p-4 border rounded-lg bg-gradient-to-r from-green-50 to-red-50 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-green-700">
+              <h3 className="text-lg font-semibold text-christmas-green">
                 {item.amount} {getTranslation(language, item.amount === 1 ? 'ticket' : 'tickets')}
               </h3>
-              <item.icon className="w-6 h-6 text-red-500" />
+              <item.icon className="w-6 h-6 text-christmas-red" />
             </div>
-            <p className="text-sm text-green-600 mb-4">{item.price} TON</p>
+            <p className="text-sm text-christmas-green mb-4">{item.price} TON</p>
             <Button 
               onClick={() => handlePurchase(item.amount, item.price)}
               disabled={isProcessing || !walletAddress}
-              className="w-full bg-gradient-to-r from-red-500 to-green-500 hover:from-red-600 hover:to-green-600 text-white"
+              className="w-full bg-gradient-to-r from-christmas-red to-christmas-green hover:from-red-600 hover:to-green-600 text-white"
             >
               {getTranslation(language, 'buy')}
             </Button>
@@ -94,7 +94,7 @@ export const Shop: React.FC<ShopProps> = ({
       <Button 
         onClick={onBack}
         variant="outline"
-        className="w-full mt-6 border-red-300 text-green-700 hover:bg-red-50"
+        className="w-full mt-6 border-christmas-red text-christmas-green hover:bg-red-50"
       >
         {getTranslation(language, 'backToMenu')}
       </Button>
