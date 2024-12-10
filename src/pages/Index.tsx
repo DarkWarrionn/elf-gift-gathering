@@ -10,7 +10,7 @@ import { Referrals } from '@/components/Referrals';
 import { Shop } from '@/components/Shop';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
-import { getTranslation } from '@/utils/language';
+import { Language } from '@/utils/language';
 
 type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
 
@@ -76,8 +76,8 @@ const Index = () => {
   const startGame = useCallback(() => {
     if (tickets <= 0) {
       toast({
-        title: getTranslation(language, 'noTickets'),
-        description: getTranslation(language, 'purchaseTickets'),
+        title: "No tickets available",
+        description: "Please purchase tickets to continue playing",
         variant: "destructive",
       });
       return;
@@ -85,7 +85,7 @@ const Index = () => {
     setTickets(prev => prev - 1);
     setIsPlaying(true);
     initializeGame();
-  }, [tickets, setTickets, setIsPlaying, initializeGame, toast, language]);
+  }, [tickets, setTickets, setIsPlaying, initializeGame, toast]);
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
