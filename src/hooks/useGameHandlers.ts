@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { CellContent } from '@/types/game';
 import { GRID_SIZE, INITIAL_MOVES, REWARDS } from '@/constants/game';
 import { Language, getTranslation } from '@/utils/language';
+import { useToast } from "@/hooks/use-toast";
 
 interface UseGameHandlersProps {
   isPlaying: boolean;
@@ -13,7 +14,7 @@ interface UseGameHandlersProps {
   setMovesLeft: (moves: number) => void;
   setCoins: React.Dispatch<React.SetStateAction<number>>;
   setGameEnded: (ended: boolean) => void;
-  toast: any;
+  toast: ReturnType<typeof useToast>;
   language: Language;
 }
 
@@ -54,10 +55,10 @@ export const useGameHandlers = ({
   }, [setCoins]);
 
   const initializeGame = useCallback(() => {
+    console.log('Initializing game...');
     const newGrid: CellContent[][] = Array(GRID_SIZE).fill(null)
       .map(() => Array(GRID_SIZE).fill(null));
     
-    // Place gifts randomly
     const gifts: CellContent[] = ['🎁', '🎁', '🎁', '🎄', '🎄', '⭐'];
     for (let gift of gifts) {
       let placed = false;
@@ -67,11 +68,11 @@ export const useGameHandlers = ({
         if (!newGrid[row][col]) {
           newGrid[row][col] = gift;
           placed = true;
+          console.log(`Placed ${gift} at position [${row}, ${col}]`);
         }
       }
     }
 
-    // Place elf randomly
     let elfRow, elfCol;
     do {
       elfRow = Math.floor(Math.random() * GRID_SIZE);
@@ -82,7 +83,7 @@ export const useGameHandlers = ({
     setElfPosition([elfRow, elfCol]);
     setGrid(newGrid);
     setMovesLeft(INITIAL_MOVES);
-    console.log('Game initialized');
+    console.log('Game initialized with elf at position:', [elfRow, elfCol]);
   }, [setGrid, setElfPosition, setMovesLeft]);
 
   const isValidMove = useCallback((row: number, col: number) => {
@@ -96,17 +97,19 @@ export const useGameHandlers = ({
   const handleMove = useCallback((row: number, col: number) => {
     if (!isValidMove(row, col)) return;
 
+    console.log('Processing move to position:', [row, col]);
     const newGrid = [...grid.map(row => [...row])];
     const [oldRow, oldCol] = elfPosition;
     const targetCell = grid[row][col];
 
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
-      setCoins(prevCoins => prevCoins + reward);
-      toast({
+      setCoins((prevCoins: number) => prevCoins + reward);
+      toast.toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,
       });
+      console.log('Reward collected:', reward);
     }
 
     newGrid[oldRow][oldCol] = null;
@@ -117,13 +120,12 @@ export const useGameHandlers = ({
 
     if (movesLeft <= 1) {
       setGameEnded(true);
-      toast({
+      toast.toast({
         title: getTranslation(language, 'gameOver'),
         description: getTranslation(language, 'thanks'),
       });
+      console.log('Game ended due to no moves left');
     }
-    
-    console.log('Move made:', { row, col, movesLeft: movesLeft - 1 });
   }, [grid, elfPosition, isValidMove, movesLeft, setGrid, setElfPosition, setMovesLeft, setCoins, setGameEnded, toast, language]);
 
   return {
