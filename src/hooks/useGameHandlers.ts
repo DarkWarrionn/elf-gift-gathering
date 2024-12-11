@@ -14,7 +14,7 @@ interface UseGameHandlersProps {
   setMovesLeft: (moves: number) => void;
   setCoins: React.Dispatch<React.SetStateAction<number>>;
   setGameEnded: (ended: boolean) => void;
-  toast: ReturnType<typeof useToast>;
+  toast: ReturnType<typeof useToast>['toast'];
   language: Language;
 }
 
@@ -105,7 +105,7 @@ export const useGameHandlers = ({
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
       setCoins(prevCoins => prevCoins + reward);
-      toast.toast({
+      toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,
       });
@@ -120,7 +120,7 @@ export const useGameHandlers = ({
 
     if (movesLeft <= 1) {
       setGameEnded(true);
-      toast.toast({
+      toast({
         title: getTranslation(language, 'gameOver'),
         description: getTranslation(language, 'thanks'),
       });

@@ -66,6 +66,13 @@ const Index = () => {
     language
   });
 
+  const handleViewChange = useCallback((view: View) => {
+    setCurrentView(view);
+    if (view === 'game') {
+      startGame();
+    }
+  }, []);
+
   const startGame = useCallback(() => {
     if (tickets <= 0) {
       toast({
@@ -93,19 +100,6 @@ const Index = () => {
     console.log('Tickets purchased:', amount);
   };
 
-  const handleContinuePlaying = useCallback(() => {
-    setGameEnded(false);
-    initializeGame();
-    console.log('Continuing game with new round');
-  }, [initializeGame, setGameEnded]);
-
-  const handleReturnToMenu = useCallback(() => {
-    setCurrentView('menu');
-    setIsPlaying(false);
-    setGameEnded(false);
-    console.log('Returning to menu');
-  }, [setCurrentView, setIsPlaying, setGameEnded]);
-
   const renderContent = () => {
     switch (currentView) {
       case 'menu':
@@ -131,8 +125,8 @@ const Index = () => {
             movesLeft={movesLeft}
             isValidMove={isValidMove}
             language={language}
-            onReturnToMenu={handleReturnToMenu}
-            onContinuePlaying={handleContinuePlaying}
+            onReturnToMenu={() => handleViewChange('menu')}
+            onContinuePlaying={startGame}
             gameEnded={gameEnded}
           />
         );
@@ -176,7 +170,7 @@ const Index = () => {
       tickets={tickets}
       referralBonus={referralBonus}
       currentView={currentView}
-      onViewChange={setCurrentView}
+      onViewChange={handleViewChange}
     >
       {renderContent()}
     </Layout>
