@@ -11,8 +11,8 @@ interface UseGameHandlersProps {
   movesLeft: number;
   setGrid: (grid: CellContent[][]) => void;
   setElfPosition: (position: [number, number]) => void;
-  setMovesLeft: (moves: number) => void;
-  setCoins: React.Dispatch<React.SetStateAction<number>>;  // Explicitly type setCoins
+  setMovesLeft: React.Dispatch<React.SetStateAction<number>>;
+  setCoins: React.Dispatch<React.SetStateAction<number>>;
   setGameEnded: (ended: boolean) => void;
   language: Language;
 }
@@ -31,13 +31,21 @@ export const useGameHandlers = ({
 }: UseGameHandlersProps) => {
   const { toast } = useToast();
 
+  const isValidMove = useCallback((row: number, col: number) => {
+    if (!isPlaying || movesLeft <= 0) return false;
+    const [elfRow, elfCol] = elfPosition;
+    const rowDiff = Math.abs(row - elfRow);
+    const colDiff = Math.abs(col - elfCol);
+    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+  }, [elfPosition, isPlaying, movesLeft]);
+
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
-    setCoins((prevCoins) => prevCoins + coins);  // Use function form with explicit typing
+    setCoins(prevCoins => prevCoins + coins);
     console.log('Rewards collected:', { coins, tickets });
   }, [setCoins]);
 
   const handleTaskComplete = useCallback((reward: number) => {
-    setCoins((prevCoins) => prevCoins + reward);  // Use function form with explicit typing
+    setCoins(prevCoins => prevCoins + reward);
     console.log('Task completed with reward:', reward);
   }, [setCoins]);
 
@@ -64,7 +72,7 @@ export const useGameHandlers = ({
 
     if (targetCell && targetCell !== '🧝') {
       const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
-      setCoins((prevCoins) => prevCoins + reward);  // Use function form with explicit typing
+      setCoins(prevCoins => prevCoins + reward);
       toast({
         title: getTranslation(language, 'rewardsCollected'),
         description: `+${reward} ${getTranslation(language, 'coins')}!`,
@@ -119,14 +127,6 @@ export const useGameHandlers = ({
     setMovesLeft(INITIAL_MOVES);
     console.log('Game initialized with elf at position:', [elfRow, elfCol]);
   }, [setGrid, setElfPosition, setMovesLeft]);
-
-  const isValidMove = useCallback((row: number, col: number) => {
-    if (!isPlaying || movesLeft <= 0) return false;
-    const [elfRow, elfCol] = elfPosition;
-    const rowDiff = Math.abs(row - elfRow);
-    const colDiff = Math.abs(col - elfCol);
-    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
-  }, [elfPosition, isPlaying, movesLeft]);
 
   return {
     handleRewardCollection,
