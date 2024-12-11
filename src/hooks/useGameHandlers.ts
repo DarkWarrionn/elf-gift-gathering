@@ -12,7 +12,7 @@ interface UseGameHandlersProps {
   setGrid: (grid: CellContent[][]) => void;
   setElfPosition: (position: [number, number]) => void;
   setMovesLeft: (moves: number) => void;
-  setCoins: React.Dispatch<React.SetStateAction<number>>;
+  setCoins: React.Dispatch<React.SetStateAction<number>>;  // Explicitly type setCoins
   setGameEnded: (ended: boolean) => void;
   language: Language;
 }
@@ -32,12 +32,12 @@ export const useGameHandlers = ({
   const { toast } = useToast();
 
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
-    setCoins((prevCoins: number) => prevCoins + coins);
+    setCoins((prevCoins) => prevCoins + coins);  // Use function form with explicit typing
     console.log('Rewards collected:', { coins, tickets });
   }, [setCoins]);
 
   const handleTaskComplete = useCallback((reward: number) => {
-    setCoins((prevCoins: number) => prevCoins + reward);
+    setCoins((prevCoins) => prevCoins + reward);  // Use function form with explicit typing
     console.log('Task completed with reward:', reward);
   }, [setCoins]);
 
@@ -53,6 +53,40 @@ export const useGameHandlers = ({
     setCoins(prevCoins => prevCoins + amount);
     console.log('Referral bonus earned:', amount);
   }, [setCoins]);
+
+  const handleMove = useCallback((row: number, col: number) => {
+    if (!isValidMove(row, col)) return;
+
+    console.log('Processing move to position:', [row, col]);
+    const newGrid = [...grid.map(row => [...row])];
+    const [oldRow, oldCol] = elfPosition;
+    const targetCell = grid[row][col];
+
+    if (targetCell && targetCell !== '🧝') {
+      const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
+      setCoins((prevCoins) => prevCoins + reward);  // Use function form with explicit typing
+      toast({
+        title: getTranslation(language, 'rewardsCollected'),
+        description: `+${reward} ${getTranslation(language, 'coins')}!`,
+      });
+      console.log('Reward collected:', reward);
+    }
+
+    newGrid[oldRow][oldCol] = null;
+    newGrid[row][col] = '🧝';
+    setGrid(newGrid);
+    setElfPosition([row, col]);
+    setMovesLeft(prev => prev - 1);
+
+    if (movesLeft <= 1) {
+      setGameEnded(true);
+      toast({
+        title: getTranslation(language, 'gameOver'),
+        description: getTranslation(language, 'thanks'),
+      });
+      console.log('Game ended due to no moves left');
+    }
+  }, [grid, elfPosition, isValidMove, movesLeft, setGrid, setElfPosition, setMovesLeft, setCoins, setGameEnded, toast, language]);
 
   const initializeGame = useCallback(() => {
     console.log('Initializing game...');
@@ -93,40 +127,6 @@ export const useGameHandlers = ({
     const colDiff = Math.abs(col - elfCol);
     return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
   }, [elfPosition, isPlaying, movesLeft]);
-
-  const handleMove = useCallback((row: number, col: number) => {
-    if (!isValidMove(row, col)) return;
-
-    console.log('Processing move to position:', [row, col]);
-    const newGrid = [...grid.map(row => [...row])];
-    const [oldRow, oldCol] = elfPosition;
-    const targetCell = grid[row][col];
-
-    if (targetCell && targetCell !== '🧝') {
-      const reward = REWARDS[targetCell as keyof typeof REWARDS] || 0;
-      setCoins((prevCoins: number) => prevCoins + reward);
-      toast({
-        title: getTranslation(language, 'rewardsCollected'),
-        description: `+${reward} ${getTranslation(language, 'coins')}!`,
-      });
-      console.log('Reward collected:', reward);
-    }
-
-    newGrid[oldRow][oldCol] = null;
-    newGrid[row][col] = '🧝';
-    setGrid(newGrid);
-    setElfPosition([row, col]);
-    setMovesLeft(prev => prev - 1);
-
-    if (movesLeft <= 1) {
-      setGameEnded(true);
-      toast({
-        title: getTranslation(language, 'gameOver'),
-        description: getTranslation(language, 'thanks'),
-      });
-      console.log('Game ended due to no moves left');
-    }
-  }, [grid, elfPosition, isValidMove, movesLeft, setGrid, setElfPosition, setMovesLeft, setCoins, setGameEnded, toast, language]);
 
   return {
     handleRewardCollection,
