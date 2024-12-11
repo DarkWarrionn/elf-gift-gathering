@@ -10,6 +10,7 @@ import { Referrals } from '@/components/Referrals';
 import { Shop } from '@/components/Shop';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
+import { Language } from '@/utils/language';
 
 type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
 
