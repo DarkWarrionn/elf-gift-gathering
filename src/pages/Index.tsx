@@ -16,7 +16,7 @@ type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
-  const toast = useToast();
+  const { toast } = useToast();
   
   const {
     isPlaying,
@@ -66,16 +66,9 @@ const Index = () => {
     language
   });
 
-  const handleViewChange = (view: View) => {
-    setCurrentView(view);
-    if (view === 'game') {
-      startGame();
-    }
-  };
-
   const startGame = useCallback(() => {
     if (tickets <= 0) {
-      toast.toast({
+      toast({
         title: getTranslation(language, 'noTickets'),
         description: getTranslation(language, 'purchaseTickets'),
         variant: "destructive",
@@ -183,7 +176,7 @@ const Index = () => {
       tickets={tickets}
       referralBonus={referralBonus}
       currentView={currentView}
-      onViewChange={handleViewChange}
+      onViewChange={setCurrentView}
     >
       {renderContent()}
     </Layout>
