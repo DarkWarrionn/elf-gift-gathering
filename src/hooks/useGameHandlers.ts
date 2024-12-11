@@ -14,7 +14,6 @@ interface UseGameHandlersProps {
   setMovesLeft: (moves: number) => void;
   setCoins: React.Dispatch<React.SetStateAction<number>>;
   setGameEnded: (ended: boolean) => void;
-  toast: ReturnType<typeof useToast>['toast'];
   language: Language;
 }
 
@@ -28,9 +27,10 @@ export const useGameHandlers = ({
   setMovesLeft,
   setCoins,
   setGameEnded,
-  toast,
   language
 }: UseGameHandlersProps) => {
+  const { toast } = useToast();
+
   const handleRewardCollection = useCallback((coins: number, tickets: number) => {
     setCoins(prevCoins => prevCoins + coins);
     console.log('Rewards collected:', { coins, tickets });
