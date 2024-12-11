@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Language } from '@/utils/language';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { X } from 'lucide-react';
 
 interface SettingsProps {
   language: Language;
@@ -25,25 +32,31 @@ export const Settings: React.FC<SettingsProps> = ({
   onBack,
 }) => {
   const { toast } = useToast();
+  const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false);
 
-  const handleConnectWallet = async () => {
+  const wallets = [
+    { id: 'tonkeeper', name: 'Tonkeeper', icon: '💎' },
+    { id: 'mytonwallet', name: 'MyTonWallet', icon: '⭐' },
+    { id: 'tonhub', name: 'Tonhub', icon: '💫' },
+    { id: 'bitget', name: 'Bitget Wallet', icon: '🔷' },
+  ];
+
+  const handleConnectWallet = async (walletId: string) => {
     try {
-      // Check if TON wallet (Tonkeeper) is installed
       if (typeof window.ton !== 'undefined') {
-        // Request wallet connection
         const { address } = await window.ton.send('ton_requestAccounts');
         onWalletConnect(address);
+        setIsWalletDialogOpen(false);
         toast({
           title: "Wallet Connected",
           description: "Your TON wallet has been successfully connected!",
         });
       } else {
         toast({
-          title: "Tonkeeper Required",
-          description: "Please install Tonkeeper wallet to connect",
+          title: "Wallet Required",
+          description: "Please install a TON wallet to connect",
           variant: "destructive",
         });
-        // Open Tonkeeper website in a new tab
         window.open('https://tonkeeper.com', '_blank');
       }
     } catch (error) {
@@ -82,7 +95,7 @@ export const Settings: React.FC<SettingsProps> = ({
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">TON Wallet Address</label>
+        <label className="text-sm font-medium">TON Wallet</label>
         <div className="flex gap-2">
           <Input
             type="text"
@@ -92,10 +105,10 @@ export const Settings: React.FC<SettingsProps> = ({
             className="flex-1"
           />
           <Button 
-            onClick={handleConnectWallet}
+            onClick={() => setIsWalletDialogOpen(true)}
             variant="outline"
           >
-            {walletAddress ? 'Connected' : 'Connect Wallet'}
+            {walletAddress ? 'Change Wallet' : 'Connect Wallet'}
           </Button>
         </div>
       </div>
@@ -107,6 +120,39 @@ export const Settings: React.FC<SettingsProps> = ({
       >
         Back to Menu
       </Button>
+
+      <Dialog open={isWalletDialogOpen} onOpenChange={setIsWalletDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Connect your wallet</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col space-y-4 py-4">
+            <p className="text-center text-muted-foreground">
+              Select your wallet to connect
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {wallets.map((wallet) => (
+                <Button
+                  key={wallet.id}
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 h-24 hover:bg-accent"
+                  onClick={() => handleConnectWallet(wallet.id)}
+                >
+                  <span className="text-2xl">{wallet.icon}</span>
+                  <span className="text-sm font-medium">{wallet.name}</span>
+                </Button>
+              ))}
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            className="absolute right-4 top-4"
+            onClick={() => setIsWalletDialogOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
