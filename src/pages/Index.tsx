@@ -8,11 +8,12 @@ import { GameGrid } from '@/components/GameGrid';
 import { Settings } from '@/components/Settings';
 import { Referrals } from '@/components/Referrals';
 import { Shop } from '@/components/Shop';
+import { Leaderboard } from '@/components/Leaderboard';
 import { RewardCollection } from '@/components/RewardCollection';
 import { TaskList } from '@/components/TaskList';
 import { Language } from '@/utils/language';
 
-type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
+type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop' | 'leaderboard';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<View>('menu');
@@ -111,6 +112,7 @@ const Index = () => {
               onOpenSettings={() => handleViewChange('settings')}
               onOpenReferrals={() => handleViewChange('referrals')}
               onOpenShop={() => handleViewChange('shop')}
+              onOpenLeaderboard={() => handleViewChange('leaderboard')}
               hasTickets={tickets > 0}
               language={language}
             />
@@ -154,6 +156,13 @@ const Index = () => {
           <Shop
             walletAddress={walletAddress}
             onPurchaseTickets={handlePurchaseTickets}
+            onBack={() => handleViewChange('menu')}
+            language={language}
+          />
+        );
+      case 'leaderboard':
+        return (
+          <Leaderboard
             onBack={() => handleViewChange('menu')}
             language={language}
           />
