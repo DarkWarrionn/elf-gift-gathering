@@ -32,19 +32,16 @@ export const Shop: React.FC<ShopProps> = ({
 
     setIsProcessing(true);
     try {
-      const transaction = {
-        to: 'EQYour_Game_TON_Address_Here',
-        value: price * 1000000000, // Convert to nanoTONs
-        payload: 'Purchase game tickets'
-      };
-
-      await window.ton.send('ton_sendTransaction', [transaction]);
-
+      // Simulate blockchain transaction
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       onPurchaseTickets(amount);
       toast({
         title: getTranslation(language, 'purchaseSuccess'),
         description: `${amount} ${getTranslation(language, 'ticketsPurchased')}!`,
       });
+      
+      console.log('Tickets purchased:', amount);
     } catch (error) {
       console.error('Purchase error:', error);
       toast({
@@ -66,24 +63,24 @@ export const Shop: React.FC<ShopProps> = ({
 
   return (
     <div className="w-full max-w-md mx-auto space-y-4">
-      <h2 className="text-2xl font-bold text-center mb-6 text-christmas-red">
+      <h2 className="text-2xl font-bold text-center mb-6 text-white">
         {getTranslation(language, 'ticketShop')} 🎄
       </h2>
 
       <div className="grid grid-cols-1 gap-4">
         {shopItems.map((item, index) => (
-          <div key={index} className="p-4 border rounded-lg bg-gradient-to-r from-green-50 to-red-50 shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in">
+          <div key={index} className="p-4 border rounded-lg bg-white/10 backdrop-blur-lg shadow-lg hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-christmas-green">
+              <h3 className="text-lg font-semibold text-white">
                 {item.amount} {getTranslation(language, item.amount === 1 ? 'ticket' : 'tickets')}
               </h3>
-              <item.icon className="w-6 h-6 text-christmas-red" />
+              <item.icon className="w-6 h-6 text-yellow-400" />
             </div>
-            <p className="text-sm text-christmas-green mb-4">{item.price} TON</p>
+            <p className="text-sm text-gray-300 mb-4">{item.price} TON</p>
             <Button 
               onClick={() => handlePurchase(item.amount, item.price)}
               disabled={isProcessing || !walletAddress}
-              className="w-full bg-gradient-to-r from-christmas-red to-christmas-green hover:from-red-600 hover:to-green-600 text-white"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white"
             >
               {getTranslation(language, 'buy')}
             </Button>
@@ -94,7 +91,7 @@ export const Shop: React.FC<ShopProps> = ({
       <Button 
         onClick={onBack}
         variant="outline"
-        className="w-full mt-6 border-christmas-red text-christmas-green hover:bg-red-50"
+        className="w-full mt-6 border-white text-white hover:bg-white/10"
       >
         {getTranslation(language, 'backToMenu')}
       </Button>

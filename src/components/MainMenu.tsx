@@ -8,6 +8,7 @@ interface MainMenuProps {
   onOpenSettings: () => void;
   onOpenReferrals: () => void;
   onOpenShop: () => void;
+  onOpenLeaderboard: () => void;
   hasTickets: boolean;
   language: Language;
 }
@@ -17,6 +18,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   onOpenSettings,
   onOpenReferrals,
   onOpenShop,
+  onOpenLeaderboard,
   hasTickets,
   language
 }) => {
@@ -45,6 +47,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
       <Button
         variant="secondary"
         className="bg-secondary hover:bg-secondary/90"
+        onClick={onOpenLeaderboard}
       >
         {getTranslation(language, 'leaderboard')}
       </Button>

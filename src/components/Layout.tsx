@@ -2,7 +2,7 @@ import React from 'react';
 import { GameStats } from '@/components/GameStats';
 import { Navigation } from '@/components/Navigation';
 
-type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
+type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop' | 'leaderboard';
 
 interface LayoutProps {
   children: React.ReactNode;
