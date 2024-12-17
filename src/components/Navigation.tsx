@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Home, ShoppingBag, Settings as SettingsIcon, Users, Gift } from 'lucide-react';
 
-type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop';
+type View = 'menu' | 'game' | 'settings' | 'referrals' | 'shop' | 'leaderboard';
 
 interface NavigationProps {
   currentView: View;
